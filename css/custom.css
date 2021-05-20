@@ -1,0 +1,5 @@
+@charset "utf-8";
+/* CSS Document */
+table.widefat tr:hover td, table.widefat tr:hover th { 
+ 	background: #FFFFCB ;
+}

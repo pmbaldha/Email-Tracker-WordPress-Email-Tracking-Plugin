@@ -1,0 +1,13 @@
+@charset "utf-8";
+/* CSS Document */
+#attachment-container {
+    margin-top: 15px;
+}
+#attachment-container > a {
+    background: #fff none repeat scroll 0 0;
+    border: 1px solid #000;
+    display: block;
+    margin: -4px;
+    padding: 9px;
+}
+

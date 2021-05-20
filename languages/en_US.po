@@ -1,0 +1,218 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: email-tracker\n"
+"POT-Creation-Date: 2018-03-04 00:02+0530\n"
+"PO-Revision-Date: 2018-03-04 00:04+0530\n"
+"Language-Team: Prashant Baldha <pmbaldha@gmail.com>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 2.0.4\n"
+"X-Poedit-Basepath: ..\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Poedit-KeywordsList: __;_e;esc_html__;esc_html_e;_n;esc_attr__;_ex;"
+"esc_attr_x;esc_attr_x;esc_html_x;esc_html_x;_n_noop;_nx_noop;"
+"translate_nooped_plural;_ex\n"
+"X-Poedit-SourceCharset: UTF-8\n"
+"Last-Translator: \n"
+"Language: en_US\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: class-et-email-list-table.php:75
+msgid "email"
+msgstr ""
+
+#: class-et-email-list-table.php:76
+msgid "emails"
+msgstr ""
+
+#: class-et-email-list-table.php:110 class-et-email-list-table.php:130
+#: template-redirect.php:26
+#, php-format
+msgid "%s time"
+msgstr ""
+
+#: class-et-email-list-table.php:110 template-redirect.php:26
+msgid " read"
+msgstr ""
+
+#: class-et-email-list-table.php:121
+msgid "Last read on "
+msgstr ""
+
+#: class-et-email-list-table.php:130
+msgid " clicked"
+msgstr ""
+
+#: class-et-email-list-table.php:141
+msgid "Last click on "
+msgstr ""
+
+#: class-et-email-list-table.php:147 template-redirect.php:120
+#, php-format
+msgid "To Track Email Links, Please %sUpgrade Now!%s"
+msgstr ""
+
+#: class-et-email-list-table.php:239 et-admin.php:184
+msgid "To"
+msgstr ""
+
+#: class-et-email-list-table.php:240 et-admin.php:192
+msgid "Subject"
+msgstr ""
+
+#: class-et-email-list-table.php:241
+msgid "Date"
+msgstr ""
+
+#: class-et-email-list-table.php:242
+msgid "Read Log"
+msgstr ""
+
+#: class-et-email-list-table.php:243
+msgid "Click Log"
+msgstr ""
+
+#: email-tracker.php:291 template-redirect.php:15
+msgid "To :"
+msgstr ""
+
+#: email-tracker.php:292 template-redirect.php:20
+msgid "Subject :"
+msgstr ""
+
+#: email-tracker.php:293 email-tracker.php:304 template-redirect.php:143
+msgid "Headers :"
+msgstr ""
+
+#: email-tracker.php:294 email-tracker.php:316 template-redirect.php:156
+msgid "Attachments :"
+msgstr ""
+
+#: email-tracker.php:295 email-tracker.php:319 template-redirect.php:162
+msgid "Message :"
+msgstr ""
+
+#: email-tracker.php:301 template-redirect.php:134
+msgid "Date :"
+msgstr ""
+
+#: et-admin.php:22
+msgid "Email Tracker"
+msgstr ""
+
+#: et-admin.php:39
+msgid "Emails per page"
+msgstr ""
+
+#: et-admin.php:48 et-admin.php:85
+msgid "Overview"
+msgstr ""
+
+#: et-admin.php:49
+msgid ""
+"This screen provides access to all of sent emails. You can see emails read "
+"log in Read Log column."
+msgstr ""
+
+#: et-admin.php:54
+msgid "Available Actions"
+msgstr ""
+
+#: et-admin.php:55
+msgid ""
+"Hovering over a row in the posts list will display action links that allow "
+"you to manage your post. You can perform the following actions:"
+msgstr ""
+
+#: et-admin.php:57
+msgid "View"
+msgstr ""
+
+#: et-admin.php:57
+msgid "will show you all email details."
+msgstr ""
+
+#: et-admin.php:58
+msgid "Delete"
+msgstr ""
+
+#: et-admin.php:58
+msgid "will permanently delete email."
+msgstr ""
+
+#: et-admin.php:64
+msgid "Bulk Actions"
+msgstr ""
+
+#: et-admin.php:65
+msgid ""
+"You can also delete multiple emails at once. Select the emails you want to "
+"act on using the checkboxes, then select the action you want to take from "
+"the Bulk Actions menu and click Apply."
+msgstr ""
+
+#: et-admin.php:86
+msgid ""
+"This screen alows you send email with attachments. This sent mail will be "
+"tracked for view"
+msgstr ""
+
+#: et-admin.php:121
+msgid "Search Email"
+msgstr ""
+
+#: et-admin.php:157
+msgid " Mail Sent!"
+msgstr ""
+
+#: et-admin.php:159
+msgid ""
+"Mail can't be send.  Possible reason: your host may have disabled the mail() "
+"function"
+msgstr ""
+
+#: et-admin.php:163
+msgid "Compose Email"
+msgstr ""
+
+#: et-admin.php:176
+msgid "From"
+msgstr ""
+
+#: et-admin.php:200
+msgid "Attachments"
+msgstr ""
+
+#: et-admin.php:212
+msgid "Message"
+msgstr ""
+
+#: template-redirect.php:23
+msgid "Read Log :"
+msgstr ""
+
+#: template-redirect.php:55
+msgid "Link Click Log:"
+msgstr ""
+
+#: template-redirect.php:67
+#, php-format
+msgid "%s click"
+msgstr ""
+
+#: template-redirect.php:83
+msgid "Link:"
+msgstr ""
+
+#: template-redirect.php:89
+msgid "# of clicks:"
+msgstr ""
+
+#: template-redirect.php:96 template-redirect.php:111
+msgid "Not clicked yet"
+msgstr ""
+
+#: template-redirect.php:102
+msgid "Last clicked on:"
+msgstr ""
