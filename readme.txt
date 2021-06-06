@@ -1,10 +1,10 @@
-﻿=== Email Tracker– WordPress Email Tracking Plugin ===
-Contributors: pmbaldha, freemius
-Tags: track email, tracking, click, tracking, email read track, email log, email tracker, click log, reading email, email history, email link click track marketing, email marketing
+﻿=== Email Tracker – WordPress Email Tracking Plugin for Email Read and Click with IP Tracking  ===
+Contributors: pmbaldha
+Tags: email, tracking, read
 Requires at least: 4.0
 Tested up to: 5.7.2
-Stable tag: 5.2.0
-License: GPL2
+Stable tag: 5.2.1
+License: GPL v3
 
 Email Tracker is a WordPress plugin that lets you know if the emails you've sent have been read or not and clicked or not. It is easy to install the WordPress plugin. You can track unlimited emails free of cost.
 
@@ -16,8 +16,9 @@ Email Tracker is a WordPress plugin that **lets you know if the emails you've se
 * **UNLIMITED EMAILS** with **UNLIMITED TRACKING**.
 * Email Open(read) Tracking with date time.
 * Email link Tracking with date time.
+* IP Tracking
 * Complete Email Tracking Statistics.
-* **Continuously improvement** in plugin codebase day by day,
+* **Continuously improvement** in plugin codebase day by day.
 * **Updated regularly with new features**
 * **Compatible with any third-party plugin** like WooCommerce, Easy Digital Downloads (EDD), Contact Form 7, Ninja Form, Gravity Form, and many more.
 * Easy to install and activation for non-technical users
@@ -55,7 +56,7 @@ Ans: No. This plugin doesn't require any third-party API.
 = Can I know when the email receiver has read my email? =
 Ans: You will get a complete list of date-time when the email receiver reads your email.
 
-= How can I buy the premium version of Email Tecker plugin? =
+= How can I buy the premium version of Email Tracker plugin? =
 Please go to your site Admin Dashboard > Email Tracker > Upgrade
 
 = What is the main difference between the free version and premium version of the plugin? =
@@ -68,8 +69,13 @@ The free version of the plugin can tracks email views. The Pro version of the pl
 
 == Changelog ==
 
+= 5.2.1, June 06, 2021 =
+* NEW: IP Tracking for Email Read.
+* NEW: IP Tracking for Email Link Click.
+* IMPROVE: UI of View Email.
+
 = 5.2.0, May 14, 2021 =
-* FIX: Open Email track is not working in many NGinx servers.
+* FIX: Open EMail track is not working in many NGinx servers.
 * TWEAK: Freemius SDK library updated to version 2.4.2.
 * IMPROVE: Plugin path determination.
 * IMPROVE: Database table structure.

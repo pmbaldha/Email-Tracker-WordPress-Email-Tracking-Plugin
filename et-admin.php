@@ -8,68 +8,19 @@
  
 if ( ! defined( 'ABSPATH' ) ) exit; // Exit if accessed directly
  
-/*
- * Email list table class
- */
-require_once( __DIR__.DIRECTORY_SEPARATOR.'class-et-email-list-table.php' );
 /** ************************ REGISTER ADMIN PAGES ****************************
  *******************************************************************************
  * Now we just need to define an admin page. For this example, we'll add a top-level
  * menu item to the bottom of the admin menus.
  */
 function emtr_add_menu_items(){
-	global $emtr_email_list_page, $emtr_compose_email;
-    $emtr_email_list_page = add_menu_page(__('Email Tracker', EMTR_TEXT_DOMAIN), esc_html__('Email Tracker', EMTR_TEXT_DOMAIN), 'administrator', 'emtr_email_list', 'emtr_render_email_list_page', 'dashicons-email-alt' );
-	add_action("load-$emtr_email_list_page", "emtr_email_list_screen_options");
+	global $emtr_compose_email;
+	
 	$emtr_compose_email = add_submenu_page( 'emtr_email_list', 'Compose Email', 'Compose Email', 'administrator', 'emtr_compose_email', 'emtr_render_compose_email' );
 	
 	add_action("load-$emtr_compose_email", "emtr_compose_email_screen_options");
 } 
 add_action('admin_menu', 'emtr_add_menu_items');
-
-function emtr_email_list_screen_options() {
-	global $emtr_email_list_page;
-	$screen = get_current_screen();
- 
-	// get out of here if we are not on our settings page
-	if(!is_object($screen) || $screen->id != $emtr_email_list_page)
-		return;
- 
-	$args = array(
-		'label' => esc_html__('Emails per page', EMTR_TEXT_DOMAIN),
-		'default' => 50,
-		'option' => 'emtr_emails_per_page'
-	);
-	add_screen_option( 'per_page', $args );
-	
-    // Add overview help tab
-    $screen->add_help_tab( array(
-        'id'	=> 'emtr_email_list_help_overview',
-        'title'	=> esc_html__('Overview', EMTR_TEXT_DOMAIN),
-        'content'	=> '<p>' . esc_html__( 'This screen provides access to all of sent emails. You can see emails read log in Read Log column.', EMTR_TEXT_DOMAIN ) . '</p>',
-    ) );
-	// Add Available actions help tab
-    $screen->add_help_tab( array(
-        'id'	=> 'emtr_email_list_help_available_actions',
-        'title'	=> esc_html__('Available Actions', EMTR_TEXT_DOMAIN),
-        'content'	=> '<p>' . esc_html__( 'Hovering over a row in the posts list will display action links that allow you to manage your post. You can perform the following actions:', EMTR_TEXT_DOMAIN ) . '</p>'
-					   .'<ul>'
-							.'<li><strong>'.esc_html__('View', EMTR_TEXT_DOMAIN).'</strong> '.esc_html__('will show you all email details.', EMTR_TEXT_DOMAIN).'</li>'
-							.'<li><strong>'.esc_html__('Delete', EMTR_TEXT_DOMAIN).'</strong> '.esc_html__('will permanently delete email.', EMTR_TEXT_DOMAIN).'</li>'							
-						.'<ul>',
-    ) );
-	// Add Bulk actions help tab
-    $screen->add_help_tab( array(
-        'id'	=> 'emtr_email_list_help_bulk_actions',
-        'title'	=> esc_html__('Bulk Actions'),
-        'content'	=> '<p>' . esc_html__( 'You can also delete multiple emails at once. Select the emails you want to act on using the checkboxes, then select the action you want to take from the Bulk Actions menu and click Apply.', EMTR_TEXT_DOMAIN) . '</p>',
-    ) );
-}
-
-function emtr_set_screen_option($status, $option, $value) {
-	if ( 'emtr_emails_per_page' == $option ) return $value;
-}
-add_filter('set-screen-option', 'emtr_set_screen_option', 10, 3);
 
 function emtr_compose_email_screen_options() {
 	global $emtr_compose_email;
@@ -85,45 +36,6 @@ function emtr_compose_email_screen_options() {
         'title'	=> esc_html__('Overview', EMTR_TEXT_DOMAIN),
         'content'	=> '<p>' . esc_html__( 'This screen alows you send email with attachments. This sent mail will be tracked for view', EMTR_TEXT_DOMAIN) . '</p>',
     ) ); 
-}
-
-
-/** *************************** RENDER Email List PAGE ********************************
- *******************************************************************************
- * This function renders the admin page and the example list table. Although it's
- * possible to call prepare_items() and display() from the constructor, there
- * are often times where you may need to include logic here between those steps,
- * so we've instead called those methods explicitly. It keeps things flexible, and
- * it's the way the list tables are used in the WordPress core.
- */
-function emtr_render_email_list_page(){    
-	add_thickbox(); 	
-    //Create an instance of our package class...
-    $obj_list_table = new EMTR_Email_List_Table();
-    //Fetch, prepare, sort, and filter our data...
-    $obj_list_table->prepare_items();    
-    ?>
-    <div class="wrap">
-        <h1>
-        	Emails           
-			<a href="<?php menu_page_url( 'emtr_compose_email', 1 );?>" class="page-title-action">Compose Email</a>
-        </h1>
-       	<?php
-        emtr_display_success_msg();
-		emtr_display_error_msg();
-		?>
-        <!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->
-        <form id="et-email-filter" method="get">
-            <!-- For plugins, we also need to ensure that the form posts back to our current page -->
-            <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-            <!-- Now we can render the completed list table -->
-            <?php 
-			$obj_list_table->search_box( esc_html__('Search Email', EMTR_TEXT_DOMAIN), 'email_search' );
-			$obj_list_table->display();
-			?>
-        </form>        
-    </div>	
-	<?php
 }
 
 function emtr_render_compose_email() {
@@ -246,6 +158,7 @@ function emtr_media_lib_uploader_enqueue( $hook ) {
 	}
 }
 add_action('admin_enqueue_scripts', 'emtr_media_lib_uploader_enqueue');
+
 /* To resolve header already sent error */
 function emtr_output_buffer_start() {
 	if(  isset($_GET['page']) && $_GET['page'] == 'emtr_email_list'

@@ -12,18 +12,6 @@ function emtr_get_table_name($var) {
 	return $wpdb->prefix.'emtr_'.$var; 
 }
 
-function emtr_get_view_link( $email_id ) {
-	return add_query_arg( array(
-					'emtr_email_id' => 	$email_id ,
-					'emtr_action'   => 	'view',
-					'TB_iframe'     => 	'true',
-					'width'         => 	600,
-					'height' 		=> 	550,
-					
-				), home_url() );
-	
-}
-
 function emtr_url_to_link($text) {
 	 // The Regular Expression filter
         $reg_exUrl = "/(http|https|ftp|ftps)\:\/\/[a-zA-Z0-9\-\.]+\.[a-zA-Z]{2,3}(\/\S*)?/";
@@ -113,7 +101,7 @@ function emtr_display_success_msg() {
 	}	
 }
 /**
- * Tries to convet the given HTML into a plain text format - best suited for
+ * Tries to convert the given HTML into a plain text format - best suited for
  * e-mail display, etc.
  *
  * <p>In particular, it tries to maintain the following features:
@@ -123,7 +111,7 @@ function emtr_display_success_msg() {
  * </ul>
  *
  * @param string html the input HTML
- * @return string the HTML conveted, as best as possible, to text
+ * @return string the HTML converted, as best as possible, to text
  * @throws Html2TextException if the HTML could not be loaded as a {@link DOMDocument}
  */
 function emtr_convet_html_to_text($html) {

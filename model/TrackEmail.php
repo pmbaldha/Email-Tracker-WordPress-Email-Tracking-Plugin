@@ -220,7 +220,6 @@ class TrackEmail
     /**
      * get_client_ip()
      *
-     * @param nonr
      * @return ip address
      *
      * to get ip address of tracked email when it will be read
@@ -248,7 +247,7 @@ class TrackEmail
         $ipaddress_exploded = explode( ',', $ipaddress );
         $ipaddress_exploded = array_map( 'trim', $ipaddress_exploded );
         $ipaddress_exploded = array_filter( $ipaddress_exploded );
-        return $ipaddress[0];
+        return ( filter_var( $ipaddress[0], FILTER_VALIDATE_IP ) ? $ipaddress[0] : '127.0.0.1' );
     }
 
 }
