@@ -7,8 +7,6 @@ import apiFetch from '@wordpress/api-fetch';
 import { __, _n } from '@wordpress/i18n';
 
 import moment from 'moment';
-import Interweave from 'interweave';
-
 
 class EmailModalView extends Component {
 
@@ -150,7 +148,7 @@ class EmailModalView extends Component {
                         }
                         <PanelBody title={ "Message" } initialOpen={ true }>
                             <PanelRow>
-                                <Interweave content={  this.state.message } />
+                                <div dangerouslySetInnerHTML={{__html: this.state.message}}></div>
                             </PanelRow>
                         </PanelBody>
                     </Panel>

@@ -21,7 +21,5 @@
   "devDependencies": {
     "@wordpress/scripts": "^16.1.1"
   },
-  "dependencies": {
-    "interweave": "^12.7.2"
-  }
+  "dependencies": {}
 }

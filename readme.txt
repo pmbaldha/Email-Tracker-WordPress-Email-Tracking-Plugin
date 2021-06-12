@@ -1,9 +1,9 @@
-﻿=== Email Tracker – WordPress Email Tracking Plugin for Email Read and Click with IP Tracking  ===
-Contributors: pmbaldha
+=== Email Tracker – WordPress Email Tracking Plugin for Email Read and Click with IP Tracking  ===
+Contributors: pmbaldha, freemius
 Tags: email, tracking, read
 Requires at least: 4.0
 Tested up to: 5.7.2
-Stable tag: 5.2.1
+Stable tag: 5.2.3
 License: GPL v3
 
 Email Tracker is a WordPress plugin that lets you know if the emails you've sent have been read or not and clicked or not. It is easy to install the WordPress plugin. You can track unlimited emails free of cost.
@@ -69,6 +69,8 @@ The free version of the plugin can tracks email views. The Pro version of the pl
 
 == Changelog ==
 
+= 5.2.2, June 07, 2021 =
+
 = 5.2.1, June 06, 2021 =
 * NEW: IP Tracking for Email Read.
 * NEW: IP Tracking for Email Link Click.
@@ -100,11 +102,11 @@ The free version of the plugin can tracks email views. The Pro version of the pl
 * TWEAK: Added user opt-in option
 * TWEAK: Added language file
 
-= 1.3.5=
+= 1.3.5 =
 * TWEAK: Password recovery email link is handled elegantly
 * TWEAK: Registration email's set password link is handled elegantly
 
-= 1.3.4=
+= 1.3.4 =
 * FEATURE: Automatically turn non-HTML links into tracked HTML links in a mail
 
 = 1.3.3 =
