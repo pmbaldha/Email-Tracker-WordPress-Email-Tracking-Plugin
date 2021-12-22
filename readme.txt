@@ -1,10 +1,10 @@
-=== Email Tracker – WordPress Email Tracking Plugin for Email Read and Click with IP Tracking  ===
+=== Email Tracker – WordPress Email Tracking Plugin for Email Read and Click (Compatible with WooCommerce, EDD) ===
 Contributors: pmbaldha, freemius
-Tags: email, tracking, read
+Tags: email-read, tracking, read
 Requires at least: 4.0
-Tested up to: 5.7.2
-Stable tag: 5.2.3
-License: GPL v3
+Tested up to: 5.8.2
+Stable tag: 5.2.8
+License: GPLv3 or later
 
 Email Tracker is a WordPress plugin that lets you know if the emails you've sent have been read or not and clicked or not. It is easy to install the WordPress plugin. You can track unlimited emails free of cost.
 
@@ -20,19 +20,17 @@ Email Tracker is a WordPress plugin that **lets you know if the emails you've se
 * Complete Email Tracking Statistics.
 * **Continuously improvement** in plugin codebase day by day.
 * **Updated regularly with new features**
-* **Compatible with any third-party plugin** like WooCommerce, Easy Digital Downloads (EDD), Contact Form 7, Ninja Form, Gravity Form, and many more.
+* **Compatible with any third-party plugins** like WooCommerce, Easy Digital Downloads (EDD), Contact Form 7, Ninja Form, Gravity Form, and many more.
 * Easy to install and activation for non-technical users
-* Send EMail to anyone regardless of he/she is a user of your WordPress site.
-* New suggestion are always welcome
+* Send EMail to anyone by typing an email address in compose email screen.
+* New suggestions are always welcome
 * Excellent **free plugin support**
 * Multilingual ready
 * Support for localization or internationalization (Translators Welcome)
 
-[Buy Email Tracker Pro](https://checkout.freemius.com/mode/dialog/plugin/1811/plan/2665/)
-
 = Support =
 
-We provide active support the Email Tracker plugin. We are always happy to help our users. Please do not hesitate to open a support ticket on [https://wordpress.org/support/plugin/email-tracker](https://wordpress.org/support/plugin/email-tracker)
+We provide active support to the Email Tracker plugin. We are always happy to help our users. Please don't hesitate to open a support ticket on [https://wordpress.org/support/plugin/email-tracker](https://wordpress.org/support/plugin/email-tracker)
 
 
 == Installation ==
@@ -57,7 +55,7 @@ Ans: No. This plugin doesn't require any third-party API.
 Ans: You will get a complete list of date-time when the email receiver reads your email.
 
 = How can I buy the premium version of Email Tracker plugin? =
-Please go to your site Admin Dashboard > Email Tracker > Upgrade
+To buy the premium version of the Email Tracker plugin. Please go to your site Admin Dashboard > Email Tracker > Upgrade.
 
 = What is the main difference between the free version and premium version of the plugin? =
 The free version of the plugin can tracks email views. The Pro version of the plugin can tracks email links along with email views.
@@ -66,15 +64,50 @@ The free version of the plugin can tracks email views. The Pro version of the pl
 1. Email list with reading log
 2. Email full view
 3. Compose email
+4. Settings to manage all emails
 
 == Changelog ==
 
+= 5.2.8, December 22, 2021 =
+* FIX: Bulk email delete functionality wasn't working.
+* FIX: Email Filter functionality wasn't working.
+
+= 5.2.7, November 01, 2021 =
+* NEW: Tested up to WordPress 5.8.1.
+* IMPROVE: Read tracking logic.
+* IMPROVE: Added new translation strings.
+* IMPROVE: Remove unneeded PHP files.
+
+= 5.2.6, September 28, 2021 =
+* IMPROVE: Security of Email List Admin Dashboard Page.
+
+= 5.2.5, August 31, 2021 =
+* IMPROVE: Send to multiple email address email entries' to was not proper.
+* IMPROVE: Send to multiple email address email entries' to was not proper.
+* IMPROVE: Track IP address logic.
+
+= 5.2.4, July 14, 2021 =
+* NEW: Give permission (capability) to other WordPress user roles for managing all emails.
+* IMPROVE: Email View Tracking image styled with height and width 0. It will stop the email receiver from seeing a broken image when the sender's WordPress site is down.
+* IMPROVE: Email List UI.
+* IMPROVE: Make codebase compatible with GPL v3 or later.
+* IMPROVE: Email Tracker plugin codebase for future maintainability and improvements. Now, the codebase is following a more object-oriented structure.
+* IMPROVE: Add Email Tracker Plugin header "Requires PHP: 5.6.1".
+* FIX: Remove Link replacement code from the free version codebase.
+* FIX: When Email links have not clicked, The Email View Link shows blank instead of "N/A".
+* FIX: Remove redundant files.
+* FIX: Typo error string when a single email view data fetch REST call gets an error.
+
+= 5.2.3, June 08, 2021 =
+* FIX: Corrupted plugin updated to WordPress.org.
+
 = 5.2.2, June 07, 2021 =
+* IMPROVE: UI of View Email.
 
 = 5.2.1, June 06, 2021 =
 * NEW: IP Tracking for Email Read.
 * NEW: IP Tracking for Email Link Click.
-* IMPROVE: UI of View Email.
+
 
 = 5.2.0, May 14, 2021 =
 * FIX: Open EMail track is not working in many NGinx servers.
@@ -97,14 +130,14 @@ The free version of the plugin can tracks email views. The Pro version of the pl
 * TWEAK: Updated the freemius SDK library.
 
 = 1.3.6 =
-* FIX: Fatal error was occurring in email view in particular specific condition (Maybe in PHP 7.0+)
-* TWEAK: Improve codebase future feature release
-* TWEAK: Added user opt-in option
-* TWEAK: Added language file
+* FIX: Fatal error was occurring in email view in particular specific condition (Maybe in PHP 7.0+).
+* TWEAK: Improve codebase future feature release.
+* TWEAK: Added user opt-in option.
+* TWEAK: Added language file.
 
 = 1.3.5 =
-* TWEAK: Password recovery email link is handled elegantly
-* TWEAK: Registration email's set password link is handled elegantly
+* TWEAK: Password recovery email link is handled elegantly.
+* TWEAK: Registration email's set password link is handled elegantly.
 
 = 1.3.4 =
 * FEATURE: Automatically turn non-HTML links into tracked HTML links in a mail
@@ -137,7 +170,7 @@ The free version of the plugin can tracks email views. The Pro version of the pl
 * FIX: Nginx server hosting email tracking issue solved.
 
 = 1.1 =
-* FIX: Image name typo mistake solved.
+* FIX: Image name typo mistake.
 
 = 1.0 =
 * TWEAK: Alt Attribute in track code

@@ -113,7 +113,7 @@ class Table extends \WP_List_Table
                 $arr_attachments = explode( ',\\n', $item[$column_name] );
                 $str_attach = '';
                 foreach ( $arr_attachments as $key => $attach ) {
-                    $str_attach .= '<a href="' . $this->content_path . $attach . '" title="' . $this->content_path . $attach . '" alt="' . $this->content_path . $attach . '" class="dashicons dashicons-paperclip" target="_blank">' . '</a>';
+                    $str_attach .= '<a href="' . esc_url( $this->content_path . $attach ) . '" title="' . esc_attr( $this->content_path . $attach ) . '" alt="' . esc_attr( $this->content_path . $attach ) . '" class="dashicons dashicons-paperclip" target="_blank">' . '</a>';
                     if ( $key != count( $arr_attachments ) - 1 ) {
                         //$str_attach .= ',<br/>';
                     }
@@ -143,15 +143,10 @@ class Table extends \WP_List_Table
      **************************************************************************/
     function column_to( $item )
     {
-        //Build row actions
+        $delete_url = wp_nonce_url( sprintf( '?page=emtr_email_list&action=%s&email=%s', 'delete', intval( $item[$this->key] ) ), 'emtr-email-list-delete' );
         $actions = array(
             'edit'   => self::get_view_link( $item, __( 'View', 'email-tracker' ) ),
-            'delete' => sprintf(
-            '<a href="?page=%s&action=%s&email=%s" class="delete">Delete</a>',
-            sanitize_text_field( $_REQUEST['page'] ),
-            'delete',
-            intval( $item[$this->key] )
-        ),
+            'delete' => '<a href="' . esc_url( $delete_url ) . '" class="delete">Delete</a>',
         );
         //Return the title contents
         return sprintf(
@@ -203,11 +198,11 @@ class Table extends \WP_List_Table
     {
         $columns = array(
             'cb'          => '<input type="checkbox" />',
-            'to'          => __( 'To', 'email-tracker' ),
-            'subject'     => __( 'Subject', 'email-tracker' ),
-            'date_time'   => __( 'Date', 'email-tracker' ),
-            'view_count'  => __( 'Read Log', 'email-tracker' ),
-            'click_count' => __( 'Click Log', 'email-tracker' ),
+            'to'          => esc_html__( 'To', 'email-tracker' ),
+            'subject'     => esc_html__( 'Subject', 'email-tracker' ),
+            'date_time'   => esc_html__( 'Date', 'email-tracker' ),
+            'view_count'  => esc_html__( 'Read Log', 'email-tracker' ),
+            'click_count' => esc_html__( 'Click Log', 'email-tracker' ),
         );
         return $columns;
     }
@@ -255,7 +250,7 @@ class Table extends \WP_List_Table
     function get_bulk_actions()
     {
         $actions = array(
-            'delete' => 'Delete',
+            'delete' => esc_html__( 'Delete', 'email-tracker' ),
         );
         return $actions;
     }
@@ -267,19 +262,38 @@ class Table extends \WP_List_Table
      * 
      * @see $this->prepare_items()
      **************************************************************************/
-    function process_bulk_action()
+    public function process_bulk_action()
     {
         //Detect when a bulk action is being triggered...
         
         if ( 'delete' === $this->current_action() ) {
+            
+            if ( isset( $_GET['action2'] ) && 'delete' == $_GET['action2'] ) {
+                if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-delete' ) ) {
+                    die( 'Security issue' );
+                }
+            } else {
+                if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-filter' ) ) {
+                    die( 'Security issue' );
+                }
+            }
+            
             global  $wpdb ;
-            $arr_email_id = (array) $_GET['email'];
+            
+            if ( is_array( $_GET['email'] ) ) {
+                $arr_email_id = array_map( 'sanitize_text_field', $_GET['email'] );
+            } else {
+                $arr_email_id = (array) sanitize_text_field( $_GET['email'] );
+            }
+            
+            $arr_email_id = array_map( 'intval', $arr_email_id );
+            $arr_email_id = array_filter( $arr_email_id );
             $arr_email_id = array_map( 'absint', $arr_email_id );
             
             if ( count( $arr_email_id ) > 0 ) {
                 $wpdb->query( 'DELETE FROM ' . $this->table_name . ' WHERE ' . $this->key . ' IN (' . implode( ',', $arr_email_id ) . ')' );
                 $wpdb->query( 'DELETE FROM ' . $this->open_log_table_name . ' WHERE trkemail_email_id IN (' . implode( ',', $arr_email_id ) . ')' );
-                $wpdb->query( 'DELETE FROM ' . Util::emtr_get_table_name( 'track_email_link_click_log' ) . ' WHERE 	trklinkclick_trklink_id IN (SELECT trklink_id FROM ' . Util::emtr_get_table_name( 'track_email_link_master' ) . ' WHERE trklink_email_id IN (' . implode( ',', $arr_email_id ) . ') 
+                $wpdb->query( 'DELETE FROM ' . Util::emtr_get_table_name( 'track_email_link_click_log' ) . ' WHERE trklinkclick_trklink_id IN (SELECT trklink_id FROM ' . Util::emtr_get_table_name( 'track_email_link_master' ) . ' WHERE trklink_email_id IN (' . implode( ',', $arr_email_id ) . ') 
 					)' );
                 $wpdb->query( 'DELETE FROM ' . Util::emtr_get_table_name( 'track_email_link_master' ) . ' WHERE trklink_email_id IN (' . implode( ',', $arr_email_id ) . ')' );
                 
@@ -377,7 +391,7 @@ class Table extends \WP_List_Table
          * to a custom query. The returned data will be pre-sorted, and this array
          * sorting technique would be unnecessary.
          */
-        $orderby = ( !empty($_REQUEST['orderby']) ? $_REQUEST['orderby'] : 'date_time' );
+        $orderby = ( !empty($_REQUEST['orderby']) ? sanitize_text_field( $_REQUEST['orderby'] ) : 'date_time' );
         //If no sort, default to title
         
         if ( $orderby == 'view_count' || $orderby == 'click_count' ) {
@@ -386,8 +400,15 @@ class Table extends \WP_List_Table
             $orderby = 'E.' . $orderby;
         }
         
-        $order = ( !empty($_REQUEST['order']) ? $_REQUEST['order'] : 'DESC' );
-        //If no order, default to asc
+        $order = 'DESC';
+        
+        if ( !empty($_REQUEST['order']) ) {
+            $order_input = sanitize_text_field( $_REQUEST['order'] );
+            if ( !in_array( $order_input, array( 'ASC', 'DESC' ) ) ) {
+                $order = $order_input;
+            }
+        }
+        
         /***********************************************************************
          * ---------------------------------------------------------------------
          * 
@@ -409,6 +430,9 @@ class Table extends \WP_List_Table
         //For search
         
         if ( isset( $_REQUEST['s'] ) && !empty($_REQUEST['s']) ) {
+            if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-filter' ) ) {
+                die( 'Security issue' );
+            }
             $search_text = sanitize_text_field( $_REQUEST['s'] );
             $wh_arr = array();
             $arr_search_field = array(
@@ -419,7 +443,7 @@ class Table extends \WP_List_Table
                 'attachments'
             );
             foreach ( $arr_search_field as $field ) {
-                $wh_arr[] = ' E.' . $field . ' LIKE \'%' . $search_text . '%\'';
+                $wh_arr[] = $wpdb->prepare( ' E.' . $field . ' LIKE %s', $wpdb->esc_like( $search_text ) );
             }
             $wh = ' AND (' . implode( ' OR ', $wh_arr ) . ')';
         }

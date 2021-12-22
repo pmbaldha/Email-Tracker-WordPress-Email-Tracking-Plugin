@@ -6,9 +6,8 @@ const { addFilter } = wp.hooks;
 import moment from 'moment';
 
 addFilter('email-tracker-view-email-extra-panel', 'email-tracker/add-click-panel', ( ret, state ) => {
-
     let click_log_panel_body;
-    if ( state.read_log.length ) {
+    if ( state.total_link_click_count > 0 ) {
         click_log_panel_body = (
             <PanelRow>
                 <ol>

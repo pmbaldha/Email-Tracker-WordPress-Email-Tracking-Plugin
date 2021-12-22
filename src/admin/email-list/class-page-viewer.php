@@ -27,8 +27,8 @@ class Page_Viewer implements Viewer {
         ?>
         <div class="wrap">
             <h1>
-                <?php echo __( 'Emails', 'email-tracker' ); ?>
-                <a href="<?php menu_page_url( 'emtr_compose_email', 1 );?>" class="page-title-action">Compose Email</a>
+                <?php esc_html_e( 'Emails', 'email-tracker' ); ?>
+                <a href="<?php esc_url( menu_page_url( 'emtr_compose_email', 1 ) );?>" class="page-title-action"><?php esc_html_e( 'Compose Email', 'email-tracker' );?></a>
             </h1>
             <?php
             Util::emtr_display_success_msg();
@@ -36,13 +36,12 @@ class Page_Viewer implements Viewer {
             ?>
             <!-- Forms are NOT created automatically, so you need to wrap the table in one to use features like bulk actions -->
             <form id="et-email-filter" method="get">
-                <!-- For plugins, we also need to ensure that the form posts back to our current page -->
-                <input type="hidden" name="page" value="<?php echo $_REQUEST['page'] ?>" />
-                <!-- Now we can render the completed list table -->
                 <?php 
-                $obj_list_table->search_box( esc_html__('Search Email', 'email-tracker'), 'email_search' );
+                $obj_list_table->search_box( esc_html__( 'Search Email', 'email-tracker' ), 'email_search' );
                 $obj_list_table->display();
+                wp_nonce_field( 'emtr-email-list-filter', '_wpnonce' );
                 ?>
+                <input type="hidden" name="page" value="emtr_email_list" />
             </form>
             <div id="emtr-email-view-modal-container">
             </div>

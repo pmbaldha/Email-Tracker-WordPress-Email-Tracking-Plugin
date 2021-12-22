@@ -7,14 +7,12 @@ $autoloader = plugin_dir_path( EMTR_FILE ) . '/vendor/autoload.php';
 if ( is_readable( $autoloader ) ) {
     require $autoloader;
 }
+require_once plugin_dir_path( EMTR_FILE ) . '/defines.php';
 require_once plugin_dir_path( EMTR_FILE ) . '/src/class-email-tracker-invoker.php';
 \PrashantWP\Email_Tracker\Email_Tracker_Invoker::register();
 /*
  * includes  all functions which required by plugin
  */
-require_once EMTR_PLUGIN_PATH . 'et-functions.php';
-require_once EMTR_PLUGIN_PATH . 'template-redirect.php';
-require_once EMTR_PLUGIN_PATH . 'libs' . DIRECTORY_SEPARATOR . 'SingletonFactory.php';
 if ( is_admin() ) {
     /*
      * Back-end (visible for admin only)
@@ -22,10 +20,10 @@ if ( is_admin() ) {
     require_once EMTR_PLUGIN_PATH . 'et-admin.php';
 }
 /**
- * This is databse version which is useful when we upgrade plugin
+ * This is database version which is useful when we upgrade plugin
  */
-define( 'EMTR_DB_VERSION', '1.2.0' );
-define( 'EMTR_VERSION', '5.2.1' );
+define( 'EMTR_DB_VERSION', '1.2.1' );
+define( 'EMTR_VERSION', '5.2.7' );
 /*
 * Upgrade Script
 */
@@ -40,20 +38,20 @@ function emtr_create_tables()
 {
     global  $wpdb ;
     require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    $tableName = emtr_get_table_name( 'email' );
+    $tableName = \PrashantWP\Email_Tracker\Util::emtr_get_table_name( 'email' );
     $charset_collate = $wpdb->get_charset_collate();
     $sql = "CREATE TABLE {$tableName}\n                (\n                    email_id int(30) unsigned NOT NULL AUTO_INCREMENT,\n                    date_time datetime NOT NULL DEFAULT '0000-00-00 00:00:00', \n                    `to` varchar(255) NOT NULL DEFAULT '',\n                    subject varchar(255) NOT NULL DEFAULT '',\n                    message text,\n                    message_plain text,\n                    headers text,\n                    attachments text,\n                    PRIMARY KEY  (email_id),\n                    KEY date_time (date_time),\n                    KEY `to` (`to`),\n                    KEY subject (subject)\n                ) {$charset_collate};";
     dbDelta( $sql );
-    $tableName = emtr_get_table_name( 'track_email_open_log' );
+    $tableName = \PrashantWP\Email_Tracker\Util::emtr_get_table_name( 'track_email_open_log' );
     $sql = "CREATE TABLE {$tableName}\n                    (\n                        trkemail_id int(30) unsigned NOT NULL AUTO_INCREMENT,\n                        trkemail_email_id int(10) unsigned NOT NULL COMMENT 'FK (emtr_mail => email_id)',\n                        trkemail_date_time datetime NOT NULL,\n                        trkemail_http_user_agent varchar(255) NOT NULL,\n                        trkemail_ip_address varchar(255) NOT NULL,\n                        trkemail_tacked_by varchar(60) NOT NULL DEFAULT 'Image' COMMENT '[Image] , [Link]',\n                        PRIMARY KEY  (trkemail_id),\n                        KEY trkemail_email_id (trkemail_email_id),\n                        KEY trkemail_date_time (trkemail_date_time)\n                    ) {$charset_collate};";
     dbDelta( $sql );
-    $tableName = emtr_get_table_name( 'track_email_open_log' );
+    $tableName = \PrashantWP\Email_Tracker\Util::emtr_get_table_name( 'track_email_open_log' );
     $sql = "CREATE TABLE IF NOT EXISTS {$tableName}\n                    (\n                        trklink_id int(30) unsigned NOT NULL AUTO_INCREMENT,\n                        trklink_user_id int(30) unsigned NOT NULL COMMENT '(FK user_master => user_id)',\n                        trklink_email_id int(30) unsigned NOT NULL COMMENT 'FK (lead_mail => email_id)',\n                        trklink_link varchar(255) NOT NULL,\n                        PRIMARY KEY  (trklink_id),\n                        KEY trklink_user_id (trklink_user_id),\n                        KEY trklink_email_id (trklink_email_id)\n                    ) {$charset_collate};";
     dbDelta( $sql );
-    $tableName = emtr_get_table_name( 'track_email_link_master' );
+    $tableName = \PrashantWP\Email_Tracker\Util::emtr_get_table_name( 'track_email_link_master' );
     $sql = "CREATE TABLE {$tableName}\n                    (\n                        trklink_id int(30) unsigned NOT NULL AUTO_INCREMENT,\n                        trklink_user_id int(30) unsigned NOT NULL COMMENT '(FK user_master => user_id)',\n                        trklink_email_id int(30) unsigned NOT NULL COMMENT 'FK (lead_mail => email_id)',\n                        trklink_link varchar(255) NOT NULL,\n                        PRIMARY KEY  (trklink_id),\n                        KEY trklink_user_id (trklink_user_id),\n                        KEY trklink_email_id (trklink_email_id)\n                    ) {$charset_collate};";
     dbDelta( $sql );
-    $tableName = emtr_get_table_name( 'track_email_link_click_log' );
+    $tableName = \PrashantWP\Email_Tracker\Util::emtr_get_table_name( 'track_email_link_click_log' );
     $sql = "CREATE TABLE IF NOT EXISTS {$tableName}\n                (\n                    trklinkclick_id int(30) unsigned NOT NULL AUTO_INCREMENT,\n                    trklinkclick_trklink_id int(30) unsigned NOT NULL COMMENT 'FK (track_email_link_master  => trklink_id)',\n                    trklinkclick_email_id int(30) unsigned NOT NULL DEFAULT '0',\n                    trklinkclick_date_time datetime NOT NULL,\n                    trklinkclick_http_user_agent varchar(255) NOT NULL,\n                    trklinkclick_ip_address varchar(200) NOT NULL,\n                    PRIMARY KEY  (trklinkclick_id),\n                    KEY trklinkclick_trklink_id (trklinkclick_trklink_id),\n                    KEY trklinkclick_email_id (trklinkclick_email_id)\n                ) {$charset_collate};";
     dbDelta( $sql );
     update_option( 'emtr_db_version', EMTR_DB_VERSION );
@@ -82,6 +80,7 @@ function emtr_plugin_activate( $network_wide )
         return;
     }
     
+    \PrashantWP\Email_Tracker\Util::get_factory()->get( '\\PrashantWP\\Email_Tracker\\Admin\\Email_List\\Setup' )->set_up_capability_to_administrator();
     // Create database table if not exists
     emtr_create_tables();
 }
@@ -110,12 +109,12 @@ function emtr_email_before_send( $orig_email )
         'to'            => emtr_extract_email_field( $email['to'] ),
         'subject'       => $email['subject'],
         'message'       => $email['message'],
-        'message_plain' => emtr_convet_html_to_text( $email['message'] ),
+        'message_plain' => \PrashantWP\Email_Tracker\Util::emtr_convet_html_to_text( $email['message'] ),
         'headers'       => emtr_extract_email_field( $email['headers'] ),
-        'attachments'   => emtr_extract_attachments( $email['attachments'] ),
+        'attachments'   => \PrashantWP\Email_Tracker\Util::emtr_extract_attachments( $email['attachments'] ),
         'date_time'     => gmdate( 'Y-m-d H:i:s' ),
     );
-    $ret = $wpdb->insert( emtr_get_table_name( 'email' ), $email_db_data, array(
+    $ret = $wpdb->insert( \PrashantWP\Email_Tracker\Util::emtr_get_table_name( 'email' ), $email_db_data, array(
         '%s',
         '%s',
         '%s',
@@ -124,59 +123,11 @@ function emtr_email_before_send( $orig_email )
         '%s',
         '%s'
     ) );
+    $model_trackemail = \PrashantWP\Email_Tracker\Factory::get( '\\PrashantWP\\Email_Tracker\\Model\\TrackEmail' );
     
     if ( $ret ) {
         $email_id = $wpdb->insert_id;
-        $orig_email['message'] = EMTR_Model::TrackEmail()->email_link_replace( $orig_email['message'], $email_id, get_current_user_id() );
-        $orig_email['message'] .= EMTR_Model::TrackEmail()->get_track_code( $email_id );
-    }
-    
-    // Debug Message
-    
-    if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
-        $str = __( 'To :', EMTR_TEXT_DOMAIN ) . htmlspecialchars( $email_db_data['to'] ) . '<br>' . __( 'Subject :', EMTR_TEXT_DOMAIN ) . $email['subject'] . '<br>' . __( 'Headers :', EMTR_TEXT_DOMAIN ) . htmlspecialchars( $email_db_data['headers'] ) . '<br>' . __( 'Attachments :', EMTR_TEXT_DOMAIN ) . nl2br( $email_db_data['attachments'] ) . '<br>' . __( 'Message :', EMTR_TEXT_DOMAIN ) . $orig_email['message'] . '<br>';
-        $str = '<b>To :</b><br/>' . htmlspecialchars( $email_db_data['to'] ) . '<br><br>
-							<b>Subject :</b><br/>' . $email_db_data['subject'] . '<br><br>';
-        $str .= '<b>' . __( 'Date :', EMTR_TEXT_DOMAIN ) . '</b><br/>' . get_date_from_gmt( $email_db_data['date_time'], 'F j, Y g:i A' ) . emtr_relative_time( get_date_from_gmt( $email_db_data['date_time'] ) ) . '<br><br>';
-        if ( !empty($email_db_data['headers']) ) {
-            $str .= '<b>' . __( 'Headers :', EMTR_TEXT_DOMAIN ) . '</b><br/>' . nl2br( $email_db_data['headers'] ) . '<br><br>';
-        }
-        
-        if ( !empty($email_db_data['attachments']) ) {
-            $arr_attachments = explode( ',\\n', $email_db_data['attachments'] );
-            $str_attach = '';
-            foreach ( $arr_attachments as $key => $attach ) {
-                $str_attach .= '<a href="' . WP_CONTENT_URL . $attach . '" target="_blank">' . WP_CONTENT_URL . $attach . '</a>';
-                if ( $key != count( $arr_attachments ) - 1 ) {
-                    $str_attach .= ',<br/>';
-                }
-            }
-            $str .= '<b>' . __( 'Attachments :', EMTR_TEXT_DOMAIN ) . '</b><br/>' . $str_attach . '<br><br>';
-        }
-        
-        $str .= '<b>' . __( 'Message :', EMTR_TEXT_DOMAIN ) . '</b><br/>' . $orig_email['message'] . '<br><br>';
-        $upload_dir = wp_upload_dir();
-        $email_dir = $upload_dir['basedir'] . DIRECTORY_SEPARATOR . 'email_output';
-        // Delete file older than 1 day
-        // if ( $handle = opendir( $email_dir ) ) {
-        // 	while ( false !== ( $file = readdir( $handle ) ) ) {
-        // 		if ( in_array( $file, array( '.', '..', '.DS_Store' ) ) ) {
-        // 			continue;
-        // 		}
-        // 		echo $email_dir . $file;
-        // 		echo "<br>";
-        // 		// email_outputemail-2021-05-14-06-13-54-0.53941100 1620972834.html
-        // 		$filelastmodified = filemtime( $email_dir . $file );
-        // 		//24 hours in a day * 3600 seconds per hour
-        // 		if( ( time() - $filelastmodified ) > 120 )
-        // 		{
-        // 		   @unlink( $email_dir . $file );
-        // 		}
-        // 	}
-        // 	closedir($handle);
-        // }
-        wp_mkdir_p( $email_dir );
-        file_put_contents( $email_dir . DIRECTORY_SEPARATOR . 'email-' . date( 'Y-m-d-H-i-s' ) . '.html', $str );
+        $orig_email['message'] .= $model_trackemail->get_track_code( $email_id );
     }
     
     return $orig_email;
@@ -185,7 +136,7 @@ function emtr_email_before_send( $orig_email )
 add_filter( 'wp_mail', 'emtr_email_before_send', PHP_INT_MAX );
 function emtr_extract_email_field( $email_field )
 {
-    return ( is_array( $email_field ) ? implode( ',\\n', $email_field ) : $email_field );
+    return ( is_array( $email_field ) ? implode( ', ', $email_field ) : $email_field );
 }
 
 /**

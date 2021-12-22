@@ -13,5 +13,4 @@ interface Menu_Page {
     public function get_menu_slug();
     public function get_callback_function();
     public function get_icon_url();
-
 }

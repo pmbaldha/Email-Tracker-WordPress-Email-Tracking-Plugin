@@ -44,7 +44,7 @@ class EmailModalView extends Component {
             this.setState( {
                isLoading: false,
             } );
-            alert( 'Error in fetching notes list with the message: ' + error.message + '(' + error.code +')' )
+            alert( 'Error in fetching an email with the message: ' + error.message + '(' + error.code +')' )
         } );
     }
 
