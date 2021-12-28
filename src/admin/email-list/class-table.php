@@ -143,10 +143,10 @@ class Table extends \WP_List_Table
      **************************************************************************/
     function column_to( $item )
     {
-        $delete_url = wp_nonce_url( sprintf( '?page=emtr_email_list&action=%s&email=%s', 'delete', intval( $item[$this->key] ) ), 'emtr-email-list-delete' );
+        $delete_url = wp_nonce_url( sprintf( '?page=emtr_email_list&action=%s&email=%s', 'delete', intval( $item[$this->key] ) ), 'emtr-email-list-delete-' . $item[$this->key], '_wpnonce' );
         $actions = array(
             'edit'   => self::get_view_link( $item, __( 'View', 'email-tracker' ) ),
-            'delete' => '<a href="' . esc_url( $delete_url ) . '" class="delete">Delete</a>',
+            'delete' => '<a href="' . $delete_url . '" class="delete">Delete</a>',
         );
         //Return the title contents
         return sprintf(
@@ -267,14 +267,17 @@ class Table extends \WP_List_Table
         //Detect when a bulk action is being triggered...
         
         if ( 'delete' === $this->current_action() ) {
+            // Bulk Delete
             
             if ( isset( $_GET['action2'] ) && 'delete' == $_GET['action2'] ) {
-                if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-delete' ) ) {
-                    die( 'Security issue' );
+                if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-filter' ) ) {
+                    die( 'Security issue1' );
                 }
             } else {
-                if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-filter' ) ) {
-                    die( 'Security issue' );
+                // Single Email Delete action
+                $email_id = intval( $_GET['email'] );
+                if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-delete-' . $email_id ) ) {
+                    die( 'Security issue2' );
                 }
             }
             

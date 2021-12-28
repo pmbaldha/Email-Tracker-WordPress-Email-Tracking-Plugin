@@ -1,9 +1,9 @@
 === Email Tracker – WordPress Email Tracking Plugin for Email Read and Click (Compatible with WooCommerce, EDD) ===
-Contributors: pmbaldha, freemius
-Tags: email-read, tracking, read
+Contributors: pmbaldha, woocommerce9, freemius
+Tags: email-read, tracking, read, WooCommerce
 Requires at least: 4.0
 Tested up to: 5.8.2
-Stable tag: 5.2.8
+Stable tag: 5.2.9
 License: GPLv3 or later
 
 Email Tracker is a WordPress plugin that lets you know if the emails you've sent have been read or not and clicked or not. It is easy to install the WordPress plugin. You can track unlimited emails free of cost.
@@ -68,6 +68,9 @@ The free version of the plugin can tracks email views. The Pro version of the pl
 
 == Changelog ==
 
+= 5.2.9, December 28, 2021 =
+* FIX: Bulk email delete functionality wasn't working in few scenarios.
+
 = 5.2.8, December 22, 2021 =
 * FIX: Bulk email delete functionality wasn't working.
 * FIX: Email Filter functionality wasn't working.
@@ -107,7 +110,6 @@ The free version of the plugin can tracks email views. The Pro version of the pl
 = 5.2.1, June 06, 2021 =
 * NEW: IP Tracking for Email Read.
 * NEW: IP Tracking for Email Link Click.
-
 
 = 5.2.0, May 14, 2021 =
 * FIX: Open EMail track is not working in many NGinx servers.
