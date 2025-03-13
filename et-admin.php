@@ -56,7 +56,8 @@ function emtr_render_compose_email() {
 			// message may be content of html tags
 			$message = wp_kses_post( $_POST['message'] );
 		}
-		$arr_attachments = array();
+
+        $arr_attachments = array();
 		if ( isset( $_POST['attachments'] ) ) {
 			$arr_attachments_url = explode( ',', $_POST['attachments'] );
 			$arr_attachments_url = array_map( 'sanitize_text_field', $arr_attachments_url );
@@ -66,10 +67,11 @@ function emtr_render_compose_email() {
 			}
 		}
 
+
 		$header = '';
-		if ( ! empty( $_POST['from'] ) && filter_var( $_POST['from'], FILTER_VALIDATE_EMAIL ) ) {
+		/*if ( ! empty( $_POST['from'] ) && filter_var( $_POST['from'], FILTER_VALIDATE_EMAIL ) ) {
 			$header = 'From:' . sanitize_text_field( $_POST['from'] ) . "\r\n";
-		}
+		}*/
 		$ret_mail = wp_mail( $to, $subject, $message, $header, $arr_attachments );
 		if ( $ret_mail ) {
 			$success = esc_html__( ' Mail Sent!', 'email-tracker' );
@@ -89,23 +91,24 @@ function emtr_render_compose_email() {
 		?>
 		<form method="post">
 			<table  class="form-table">
-				<tr> 
-					<th scope="row">  
-						<label for="from"><?php esc_html_e( 'From (Optional)', 'email-tracker' ); ?></label> 
+				<!--<tr>
+					<th scope="row">
+						<label for="from"><?php /*esc_html_e( 'From (Optional)', 'email-tracker' ); */?></label>
 					</th>
+
 					<td> 
-						<input type="text" id="from" name="from" value="" placeholder="<?php esc_attr_e( 'name@yourdomain.com (Optional)', 'email-tracker' ); ?>" tabindex="1" class="regular-text">
+						<input type="text" id="from" name="from" value="" placeholder="<?php /*esc_attr_e( 'name@yourdomain.com (Optional)', 'email-tracker' ); */?>" tabindex="1" class="regular-text">
 						<p class="description"><strong>
 						<?php
-						esc_html_e(
+/*						esc_html_e(
 							'Make sure you are setting a from address is hosted in your domain; otherwise, Your Composed email may be considered spam. For example, You should write the from email address like john@yourdomain.com.
 ',
 							'email-tracker'
 						);
-						?>
+						*/?>
 														</strong></p>
 					</td>  
-				</tr>
+				</tr>-->
 				<tr> 
 					<th scope="row">  
 						<label for="to"><?php esc_html_e( 'To', 'email-tracker' ); ?></label> 

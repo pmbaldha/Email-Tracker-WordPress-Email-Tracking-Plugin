@@ -24,7 +24,9 @@ final class Email_Tracker_Admin extends \PrashantWP\Email_Tracker\Base {
             self::$instance = new self();
 
             self::$instance->set_up_email_list();
-            self::$instance->set_up_settings();
+	        if ( emtr()->is__premium_only() ) {
+		        self::$instance->set_up_settings__premium_only();
+	        }
         }
     }
 
@@ -34,7 +36,7 @@ final class Email_Tracker_Admin extends \PrashantWP\Email_Tracker\Base {
                 ->init();
     }
 
-    public function set_up_settings() {
+    public function set_up_settings__premium_only() {
         ( new Settings\Setup() )->init();
     }
 }

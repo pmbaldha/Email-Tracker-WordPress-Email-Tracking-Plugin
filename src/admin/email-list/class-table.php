@@ -1,17 +1,19 @@
 <?php
-
 /**
  * To list of all emails
  */
 namespace PrashantWP\Email_Tracker\Admin\Email_List;
+ 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
 
-if ( !defined( 'ABSPATH' ) ) {
-    exit;
+use PrashantWP\Email_Tracker\Util;
+
+if ( ! class_exists('\WP_List_Table' ) ) {
+    require_once( ABSPATH . 'wp-admin/includes/class-wp-list-table.php' );
 }
-use  PrashantWP\Email_Tracker\Util ;
-if ( !class_exists( '\\WP_List_Table' ) ) {
-    require_once ABSPATH . 'wp-admin/includes/class-wp-list-table.php';
-}
+
 /************************** CREATE A PACKAGE CLASS *****************************
  *******************************************************************************
  * Create a new list table package that extends the core WP_List_Table class.
@@ -25,37 +27,42 @@ if ( !class_exists( '\\WP_List_Table' ) ) {
  * 
  * Our theme for this list table is going to be movies.
  */
-class Table extends \WP_List_Table
-{
-    protected  $table_name ;
-    protected  $open_log_table_name ;
-    protected  $key = 'email_id' ;
-    protected  $key_field = 'to' ;
-    protected  $content_path ;
+class Table extends \WP_List_Table {
+    
+
+	protected $table_name;
+	protected $open_log_table_name;
+	protected $key = 'email_id';
+	protected $key_field = 'to';
+	
+	protected $content_path;
+
     /** ************************************************************************
      * REQUIRED. Set up a constructor that references the parent constructor. We 
      * use the parent reference to set some default configs.
      ***************************************************************************/
-    function __construct()
-    {
-        global  $status, $page ;
-        global  $wpdb ;
-        $this->table_name = Util::emtr_get_table_name( 'email' );
-        $this->open_log_table_name = Util::emtr_get_table_name( 'track_email_open_log' );
-        $this->content_path = WP_CONTENT_URL;
+    function __construct(){
+        global $status, $page;
+		global $wpdb;
+                
+		$this->table_name = Util::emtr_get_table_name( 'email' );
+		$this->open_log_table_name = Util::emtr_get_table_name( 'track_email_open_log' );
+
+		$this->content_path = WP_CONTENT_URL;
+		
         //Set parent defaults
         parent::__construct( array(
-            'singular' => __( 'email', 'email-tracker' ),
-            'plural'   => __( 'emails', 'email-tracker' ),
-            'ajax'     => false,
+            'singular'  => __('email', 'email-tracker'),     //singular name of the listed records
+            'plural'    => __('emails', 'email-tracker'),    //plural name of the listed records
+            'ajax'      => false        //does this table support ajax?
         ) );
+        
     }
-    
-    private function get_view_link( $item, $link_label )
-    {
-        return '<a href="#" onClick="return EMTRLoadView( ' . esc_js( $item[$this->key] ) . ', \'' . esc_js( $item['subject'] ) . '\', \'' . esc_js( $item[$this->key_field] ) . '\')">' . esc_html( $link_label ) . '</a>';
+
+    private function get_view_link( $item, $link_label ) {
+        return '<a href="#" onClick="return EMTRLoadView( ' . esc_js( $item[$this->key] ) . ', \'' . esc_js( $item['subject'] ) . '\', \'' . esc_js( $item[$this->key_field] ) . '\')">'. esc_html( $link_label ) . '</a>';
     }
-    
+
     /** ************************************************************************
      * Recommended. This method is called when the parent class can't find a method
      * specifically build for a given column. Generally, it's recommended to include
@@ -77,54 +84,73 @@ class Table extends \WP_List_Table
      * @param array $column_name The name/slug of the column to be processed
      * @return string Text or HTML to be placed inside the column <td>
      **************************************************************************/
-    function column_default( $item, $column_name )
-    {
-        switch ( $column_name ) {
+    function column_default($item, $column_name){
+        switch($column_name){
             case 'subject':
-                return self::get_view_link( $item, $item['subject'] );
-            case 'view_count':
-                $str = '<b>' . sprintf( _n( '%s time', '%s times', $item[$column_name] ), $item[$column_name] ) . __( ' read', 'email-tracker' ) . '</b>';
-                
-                if ( $item[$column_name] == 0 ) {
-                    $str .= '<div alt="f147" class="dashicons dashicons-no-alt"></div>';
-                } else {
-                    $str .= '<div alt="f147" class="dashicons dashicons-yes"></div>';
-                }
-                
-                $str .= '<br/>';
-                
-                if ( !empty($item['view_date_time']) ) {
-                    $arr_view_date_time = explode( ',', $item['view_date_time'] );
-                    rsort( $arr_view_date_time );
-                    $str .= __( 'Last read on ', 'email-tracker' ) . get_date_from_gmt( $arr_view_date_time[0], 'F j, Y g:i A' ) . '&nbsp;' . Util::emtr_relative_time( get_date_from_gmt( $arr_view_date_time[0] ) );
-                }
-                
-                return $str;
-            case 'click_count':
-                return '<strong>' . sprintf( __( 'To Track Email Links, Please %sUpgrade Now!%s', 'email-tracker' ), '<a href="' . emtr()->get_upgrade_url() . '">', '</a>' ) . '<strong>';
+				return self::get_view_link( $item, $item['subject'] );
+			case 'view_count':
+				$str = '<b>'.sprintf( _n( '%s time', '%s times', $item[$column_name] ), $item[$column_name] ) . __( ' read', 'email-tracker' ) . '</b>';
+				if( $item[$column_name] == 0 ) {
+					$str .= '<div alt="f147" class="dashicons dashicons-no-alt"></div>';
+				}
+				else {
+					$str .= '<div alt="f147" class="dashicons dashicons-yes"></div>';
+				}
+				$str .= '<br/>';
+				if( !empty($item['view_date_time']) ) {
+					$arr_view_date_time = explode(',', $item['view_date_time']);
+					rsort( $arr_view_date_time );
+					$str .= __( 'Last read on ', 'email-tracker' ). get_date_from_gmt( $arr_view_date_time[0], 'F j, Y g:i A' ).'&nbsp;' . Util::emtr_relative_time(get_date_from_gmt( $arr_view_date_time[0] ) );
+				
+				}
+				return $str;	
+				
+				
+			case 'click_count':
+				if ( emtr()->is__premium_only() ) {
+        			if ( emtr()->is_plan( 'pro', true ) ||  emtr()->is_trial() ) {
+						$str = '<b>'.sprintf( _n( '%s time', '%s times', $item[$column_name] ), $item[$column_name] ).__(' clicked', 'email-tracker').'</b>';
+						if( $item[$column_name] == 0 ) {
+							$str .= '<div alt="f147" class="dashicons dashicons-no-alt"></div>';
+						}
+						else {
+							$str .= '<div alt="f147" class="dashicons dashicons-yes"></div>';
+						}
+						$str .= '<br/>';
+						if( !empty($item['click_date_time']) ) {
+							$arr_click_date_time = explode(',',$item['click_date_time']);
+							rsort( $arr_click_date_time );
+							$str .= __('Last click on ', 'email-tracker'). get_date_from_gmt($arr_click_date_time[0], 'F j, Y g:i A').'&nbsp;'.Util::emtr_relative_time(get_date_from_gmt( $arr_click_date_time[0] ));
+						
+						}
+						return $str;
+					}
+				}
+				return '<strong>' . sprintf( __( 'To Track Email Links, Please %sUpgrade Now!%s', 'email-tracker'), '<a href="' . emtr()->get_upgrade_url() . '">', '</a>' ) . '<strong>';
             case 'date_time':
-                return get_date_from_gmt( $item[$column_name], 'F j, Y g:i A' ) . Util::emtr_relative_time( get_date_from_gmt( $item[$column_name] ) );
-            case 'headers':
-                return nl2br( $item[$column_name] );
-            case 'attachments':
-                if ( empty($item[$column_name]) ) {
-                    return $item[$column_name];
-                }
-                $arr_attachments = explode( ',\\n', $item[$column_name] );
-                $str_attach = '';
-                foreach ( $arr_attachments as $key => $attach ) {
-                    $str_attach .= '<a href="' . esc_url( $this->content_path . $attach ) . '" title="' . esc_attr( $this->content_path . $attach ) . '" alt="' . esc_attr( $this->content_path . $attach ) . '" class="dashicons dashicons-paperclip" target="_blank">' . '</a>';
-                    if ( $key != count( $arr_attachments ) - 1 ) {
-                        //$str_attach .= ',<br/>';
-                    }
-                }
-                return $str_attach;
+				return get_date_from_gmt( $item[$column_name] ,'F j, Y g:i A' ) . Util::emtr_relative_time( get_date_from_gmt( $item[$column_name] ) );
+				
+			case 'headers':
+				return nl2br( $item[$column_name] );
+			case 'attachments':
+				if( empty($item[$column_name]) )
+					return $item[$column_name];
+				$arr_attachments = explode( ',\n', $item[$column_name] );
+				$str_attach = '';
+				foreach( $arr_attachments as $key=>$attach ) {
+					$str_attach .= '<a href="'. esc_url( $this->content_path.$attach ).'" title="'. esc_attr( $this->content_path . $attach ) .'" alt="'. esc_attr( $this->content_path . $attach ) .'" class="dashicons dashicons-paperclip" target="_blank">'.'</a>';
+					if( $key != count($arr_attachments) - 1 ) {
+						//$str_attach .= ',<br/>';
+					}
+				}
+				return $str_attach;
+				
             default:
-                return print_r( $item, true );
-                //Show the whole array for troubleshooting purposes
+                return print_r($item,true); //Show the whole array for troubleshooting purposes
         }
     }
-    
+
+
     /** ************************************************************************
      * Recommended. This is a custom column method and is responsible for what
      * is rendered in any column with a name/slug of 'title'. Every time the class
@@ -141,25 +167,22 @@ class Table extends \WP_List_Table
      * @param array $item A singular item (one full row's worth of data)
      * @return string Text to be placed inside the column <td> (movie title only)
      **************************************************************************/
-    function column_to( $item )
-    {
-        $delete_url = wp_nonce_url( sprintf( '?page=emtr_email_list&action=%s&email=%s', 'delete', intval( $item[$this->key] ) ), 'emtr-email-list-delete-' . $item[$this->key], '_wpnonce' );
+    function column_to($item){
+        $delete_url = wp_nonce_url( sprintf( '?page=emtr_email_list&action=%s&email=%s', 'delete', intval( $item[$this->key] ) ), 'emtr-email-list-delete-'.$item[$this->key], '_wpnonce' );
         $actions = array(
-            'edit'   => self::get_view_link( $item, __( 'View', 'email-tracker' ) ),
-            'delete' => '<a href="' . $delete_url . '" class="delete">Delete</a>',
+            'edit'        => self::get_view_link( $item, __( 'View', 'email-tracker' ) ),
+            'delete'    => '<a href="' . $delete_url . '" class="delete">Delete</a>',
         );
+        
         //Return the title contents
-        return sprintf(
-            '%1$s <span style="color:silver">(id:%2$s)</span>%3$s',
-            /*$1%s*/
-            $item[$this->key_field],
-            /*$2%s*/
-            $item[$this->key],
-            /*$3%s*/
-            $this->row_actions( $actions )
+        return sprintf('%1$s <span style="color:silver">(id:%2$s)</span>%3$s',
+            /*$1%s*/ $item[$this->key_field],
+            /*$2%s*/ $item[$this->key],
+            /*$3%s*/ $this->row_actions($actions)
         );
     }
-    
+
+
     /** ************************************************************************
      * REQUIRED if displaying checkboxes or using bulk actions! The 'cb' column
      * is given special treatment when columns are processed. It ALWAYS needs to
@@ -169,18 +192,15 @@ class Table extends \WP_List_Table
      * @param array $item A singular item (one full row's worth of data)
      * @return string Text to be placed inside the column <td> (movie title only)
      **************************************************************************/
-    function column_cb( $item )
-    {
+    function column_cb($item){
         return sprintf(
             '<input type="checkbox" name="%1$s[]" value="%2$s" />',
-            /*$1%s*/
-            $this->_args['singular'],
-            //Let's simply repurposed the table's singular label ("movie")
-            /*$2%s*/
-            $item[$this->key]
+            /*$1%s*/ $this->_args['singular'],  //Let's simply repurposed the table's singular label ("movie")
+            /*$2%s*/ $item[$this->key]                //The value of the checkbox should be the record's id
         );
     }
-    
+
+
     /** ************************************************************************
      * REQUIRED! This method dictates the table's columns and titles. This should
      * return an array where the key is the column slug (and class) and the value 
@@ -194,19 +214,22 @@ class Table extends \WP_List_Table
      * @see WP_List_Table::::single_row_columns()
      * @return array An associative array containing column information: 'slugs'=>'Visible Titles'
      **************************************************************************/
-    function get_columns()
-    {
+    function get_columns(){
         $columns = array(
-            'cb'          => '<input type="checkbox" />',
+            'cb'          => '<input type="checkbox" />', //Render a checkbox instead of text
             'to'          => esc_html__( 'To', 'email-tracker' ),
             'subject'     => esc_html__( 'Subject', 'email-tracker' ),
-            'date_time'   => esc_html__( 'Date', 'email-tracker' ),
-            'view_count'  => esc_html__( 'Read Log', 'email-tracker' ),
-            'click_count' => esc_html__( 'Click Log', 'email-tracker' ),
+			'date_time'   => esc_html__( 'Date', 'email-tracker' ),
+			'view_count'  => esc_html__( 'Read Log', 'email-tracker' ),
+			'click_count' => esc_html__( 'Click Log', 'email-tracker' ),
+			
+            //'headers'  => 'Headers',
+			//'attachments'  => 'Attachments'
         );
         return $columns;
     }
-    
+
+
     /** ************************************************************************
      * Optional. If you want one or more columns to be sortable (ASC/DESC toggle), 
      * you will need to register it here. This should return an array where the 
@@ -221,18 +244,18 @@ class Table extends \WP_List_Table
      * 
      * @return array An associative array containing all the columns that should be sortable: 'slugs'=>array('data_values',bool)
      **************************************************************************/
-    function get_sortable_columns()
-    {
+    function get_sortable_columns() {
         $sortable_columns = array(
-            'to'          => array( 'to', false ),
-            'subject'     => array( 'subject', false ),
-            'date_time'   => array( 'date_time', true ),
-            'view_count'  => array( 'view_count', false ),
-            'click_count' => array( 'click_count', false ),
+            'to'     => array('to',false),     //true means it's already sorted
+            'subject'    => array('subject',false),
+            'date_time'  => array('date_time',true),
+			'view_count'  => array('view_count',false),
+			'click_count'  => array('click_count',false)
         );
         return $sortable_columns;
     }
-    
+
+
     /** ************************************************************************
      * Optional. If you need to include bulk actions in your list table, this is
      * the place to define them. Bulk actions are an associative array in the format
@@ -247,14 +270,14 @@ class Table extends \WP_List_Table
      * 
      * @return array An associative array containing all the bulk actions: 'slugs'=>'Visible Titles'
      **************************************************************************/
-    function get_bulk_actions()
-    {
+    function get_bulk_actions() {
         $actions = array(
-            'delete' => esc_html__( 'Delete', 'email-tracker' ),
+            'delete'    => esc_html__( 'Delete' , 'email-tracker' ),
         );
         return $actions;
     }
-    
+
+
     /** ************************************************************************
      * Optional. You can handle your bulk actions anywhere or anyhow you prefer.
      * For this example package, we will handle it in the class to keep things
@@ -262,65 +285,54 @@ class Table extends \WP_List_Table
      * 
      * @see $this->prepare_items()
      **************************************************************************/
-    public function process_bulk_action()
-    {
+    public function process_bulk_action() {
         //Detect when a bulk action is being triggered...
-        
         if ( 'delete' === $this->current_action() ) {
-            // Bulk Delete
-            
+			// Bulk Delete
             if ( isset( $_GET['action2'] ) && 'delete' == $_GET['action2'] ) {
-                if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-filter' ) ) {
+                if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'],  'emtr-email-list-filter') ) {
                     die( 'Security issue1' );
                 }
-            } else {
-                // Single Email Delete action
-                $email_id = intval( $_GET['email'] );
-                if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-delete-' . $email_id ) ) {
+            } else { // Single Email Delete action
+				$email_id = intval( $_GET['email'] );
+                if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-delete-' . $email_id ) ) {
                     die( 'Security issue2' );
                 }
             }
-            
-            global  $wpdb ;
-            
+
+			global $wpdb;
+
             if ( is_array( $_GET['email'] ) ) {
                 $arr_email_id = array_map( 'sanitize_text_field', $_GET['email'] );
             } else {
-                $arr_email_id = (array) sanitize_text_field( $_GET['email'] );
+			    $arr_email_id = (array) sanitize_text_field( $_GET['email'] );
             }
-            
+
             $arr_email_id = array_map( 'intval', $arr_email_id );
-            $arr_email_id = array_filter( $arr_email_id );
-            $arr_email_id = array_map( 'absint', $arr_email_id );
-            
-            if ( count( $arr_email_id ) > 0 ) {
-                $wpdb->query( 'DELETE FROM ' . $this->table_name . ' WHERE ' . $this->key . ' IN (' . implode( ',', $arr_email_id ) . ')' );
-                $wpdb->query( 'DELETE FROM ' . $this->open_log_table_name . ' WHERE trkemail_email_id IN (' . implode( ',', $arr_email_id ) . ')' );
-                $wpdb->query( 'DELETE FROM ' . Util::emtr_get_table_name( 'track_email_link_click_log' ) . ' WHERE trklinkclick_trklink_id IN (SELECT trklink_id FROM ' . Util::emtr_get_table_name( 'track_email_link_master' ) . ' WHERE trklink_email_id IN (' . implode( ',', $arr_email_id ) . ') 
-					)' );
-                $wpdb->query( 'DELETE FROM ' . Util::emtr_get_table_name( 'track_email_link_master' ) . ' WHERE trklink_email_id IN (' . implode( ',', $arr_email_id ) . ')' );
-                
-                if ( count( $arr_email_id ) == 1 ) {
-                    Util::emtr_set_success_msg( __( 'Email has been deleted successfully.', 'email-tracker' ) );
-                } else {
-                    Util::emtr_set_success_msg( __( 'Emails have been deleted successfully.', 'email-tracker' ) );
-                }
-            
-            } else {
-                Util::emtr_set_error_msg( __( 'Please select at least one email to delete.', 'email-tracker' ) );
-            }
-            
-            
-            if ( wp_get_referer() ) {
-                wp_safe_redirect( wp_get_referer() );
-                exit;
-            }
-            
+            $arr_email_id = array_filter( $arr_email_id  );
+			$arr_email_id = array_map( 'absint', $arr_email_id );
+			if ( count( $arr_email_id ) > 0 ) {
+				Util::delete_emails( $arr_email_id );
+
+				if ( count($arr_email_id) == 1 ) {
+					Util::emtr_set_success_msg( __( 'Email has been deleted successfully.', 'email-tracker' ) );
+				} else {
+					Util::emtr_set_success_msg( __( 'Emails have been deleted successfully.', 'email-tracker' ) );
+				}
+			} else {
+				Util::emtr_set_error_msg( __( 'Please select at least one email to delete.', 'email-tracker' ) );
+			}
+
+			if ( wp_get_referer() ) {
+				wp_safe_redirect( wp_get_referer() );
+				exit;
+			}
+			
             //wp_die('Items deleted (or they would be if we had items to delete)!');
         }
-    
+        
     }
-    
+
     /** ************************************************************************
      * REQUIRED! This is where you prepare your data for display. This method will
      * usually be used to query the database, sort and filter the data, and generally
@@ -336,25 +348,27 @@ class Table extends \WP_List_Table
      * @uses $this->get_pagenum()
      * @uses $this->set_pagination_args()
      **************************************************************************/
-    function prepare_items()
-    {
-        global  $wpdb ;
-        //This is used only if making any database queries
+    function prepare_items() {
+        global $wpdb; //This is used only if making any database queries
+
         /**
          * First, lets decide how many records per page to show
          */
-        // get the current user ID
-        $user = get_current_user_id();
-        // get the current admin screen
-        $screen = get_current_screen();
-        // retrieve the "per_page" option
-        $screen_option = $screen->get_option( 'per_page', 'option' );
-        // retrieve the value of the option stored for the current user
-        $per_page = get_user_meta( $user, $screen_option, true );
-        if ( empty($per_page) || $per_page < 1 || is_array( $per_page ) ) {
-            // get the default value if none is set
-            $per_page = 50;
-        }
+		 // get the current user ID
+		$user = get_current_user_id();
+		// get the current admin screen
+		$screen = get_current_screen();
+
+		// retrieve the "per_page" option
+		$screen_option = $screen->get_option( 'per_page', 'option' );
+
+		// retrieve the value of the option stored for the current user
+		$per_page = get_user_meta($user, $screen_option, true);
+		if ( empty ( $per_page) || $per_page < 1 || is_array( $per_page ) ) {
+			// get the default value if none is set
+			 $per_page = 50;
+		}
+
         /**
          * REQUIRED. Now we need to define our column headers. This includes a complete
          * array of columns to be displayed (slugs & titles), a list of columns
@@ -365,18 +379,24 @@ class Table extends \WP_List_Table
         $columns = $this->get_columns();
         $hidden = array();
         $sortable = $this->get_sortable_columns();
+        
+        
         /**
          * REQUIRED. Finally, we build an array to be used by the class for column 
          * headers. The $this->_column_headers property takes an array which contains
          * 3 other arrays. One for all columns, one for hidden columns, and one
          * for sortable columns.
          */
-        $this->_column_headers = array( $columns, $hidden, $sortable );
+        $this->_column_headers = array($columns, $hidden, $sortable);
+        
+        
         /**
          * Optional. You can handle your bulk actions however you see fit. In this
          * case, we'll handle them within our package just to keep things clean.
          */
         $this->process_bulk_action();
+        
+        
         /**
          * Instead of querying a database, we're going to fetch the example data
          * property we created for use in this plugin. This makes this example 
@@ -386,6 +406,9 @@ class Table extends \WP_List_Table
          * use sort and pagination data to build a custom query instead, as you'll
          * be able to use your precisely-queried data immediately.
          */
+		
+        
+        
         /**
          * This checks for sorting input and sorts the data in our array accordingly.
          * 
@@ -394,24 +417,22 @@ class Table extends \WP_List_Table
          * to a custom query. The returned data will be pre-sorted, and this array
          * sorting technique would be unnecessary.
          */
-        $orderby = ( !empty($_REQUEST['orderby']) ? sanitize_text_field( $_REQUEST['orderby'] ) : 'date_time' );
-        //If no sort, default to title
-        
-        if ( $orderby == 'view_count' || $orderby == 'click_count' ) {
-            $orderby = $orderby;
-        } else {
-            $orderby = 'E.' . $orderby;
+        $orderby = ( ! empty( $_REQUEST['orderby'] ) ) ? sanitize_text_field( $_REQUEST['orderby'] ) : 'date_time'; //If no sort, default to title
+        if( $orderby == 'view_count'  || $orderby == 'click_count')  {
+            $orderby = $orderby ;
         }
-        
+        else {
+            $orderby = 'E.'.$orderby ;
+        }
+
         $order = 'DESC';
-        
-        if ( !empty($_REQUEST['order']) ) {
+        if ( ! empty( $_REQUEST['order'] ) ) {
             $order_input = sanitize_text_field( $_REQUEST['order'] );
-            if ( !in_array( $order_input, array( 'ASC', 'DESC' ) ) ) {
+            if ( ! in_array( $order_input, array( 'ASC', 'DESC' ) ) ) {
                 $order = $order_input;
             }
         }
-        
+
         /***********************************************************************
          * ---------------------------------------------------------------------
          * 
@@ -423,67 +444,75 @@ class Table extends \WP_List_Table
          * ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
          * ---------------------------------------------------------------------
          **********************************************************************/
+
         /**
          * REQUIRED for pagination. Let's figure out what page the user is currently 
          * looking at. We'll need this later, so you should always include it in 
          * your own package classes.
          */
         $current_page = $this->get_pagenum();
-        $wh = ' ';
-        //For search
         
-        if ( isset( $_REQUEST['s'] ) && !empty($_REQUEST['s']) ) {
-            if ( !wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-filter' ) ) {
+		$wh = ' ';
+		
+		//For search
+		if( isset( $_REQUEST['s'] ) && ! empty( $_REQUEST['s'] ) ) {
+            if ( ! wp_verify_nonce( $_REQUEST['_wpnonce'], 'emtr-email-list-filter' ) ) {
                 die( 'Security issue' );
             }
+            
             $search_text = sanitize_text_field( $_REQUEST['s'] );
-            $wh_arr = array();
-            $arr_search_field = array(
-                'to',
-                'subject',
-                'message_plain',
-                'headers',
-                'attachments'
-            );
-            foreach ( $arr_search_field as $field ) {
-                $wh_arr[] = $wpdb->prepare( ' E.' . $field . ' LIKE %s', $wpdb->esc_like( $search_text ) );
-            }
-            $wh = ' AND (' . implode( ' OR ', $wh_arr ) . ')';
-        }
-        
+			
+			$wh_arr = array();
+         	$arr_search_field = array( 'to', 'subject', 'message_plain', 'headers', 'attachments' );
+			foreach ( $arr_search_field as $field ) {
+				$wh_arr[] = $wpdb->prepare( ' E.' . $field . ' LIKE %s', '%' . $wpdb->esc_like( $search_text ) . '%' );
+			}
+			$wh = ' AND (' . implode( ' OR ' , $wh_arr). ')';
+		}
+		 
+		 
         /**
          * REQUIRED for pagination. Let's check how many items are in our data array. 
          * In real-world use, this would be the total number of items in your database, 
          * without filtering. We'll need this later, so you should always include it 
          * in your own package classes.
          */
-        //$total_items = count($data);
-        $total_items = $wpdb->get_var( 'SELECT count(*) FROM ' . $this->table_name . ' E WHERE 1 ' . $wh );
+		//$total_items = count($data);
+		$total_items = $wpdb->get_var( 'SELECT count(*) FROM '.$this->table_name.' E WHERE 1 ' . $wh );
+        
+        
         /**
          * The WP_List_Table class does not handle pagination for us, so we need
          * to ensure that the data is trimmed to only the current page. We can use
          * array_slice() to 
          */
         //$data = array_slice($data,(($current_page-1)*$per_page),$per_page);
+        
+        
+        
         /**
          * REQUIRED. Now we can add our *sorted* data to the items property, where 
          * it can be used by the rest of the class.
          */
         $sql = 'SELECT E.*,
-							( SELECT count(*) FROM ' . $this->open_log_table_name . ' EOC WHERE EOC.trkemail_email_id = E.email_id) AS view_count,
-							( SELECT GROUP_CONCAT( trkemail_date_time ) FROM ' . $this->open_log_table_name . ' EOD WHERE EOD.trkemail_email_id = E.email_id ORDER BY EOD.trkemail_date_time DESC) AS view_date_time,
-							( SELECT count(*) FROM ' . Util::emtr_get_table_name( 'track_email_link_click_log' ) . ' ECL WHERE ECL.trklinkclick_email_id = E.email_id) AS click_count,	
-							( SELECT GROUP_CONCAT( trklinkclick_date_time ) FROM ' . Util::emtr_get_table_name( 'track_email_link_click_log' ) . ' ECLT WHERE ECLT.trklinkclick_email_id = E.email_id ORDER BY ECLT.trklinkclick_date_time DESC) AS click_date_time
-						 FROM ' . $this->table_name . ' E WHERE 1 ' . $wh . 'ORDER BY ' . $orderby . ' ' . $order . ' LIMIT ' . $per_page . ' OFFSET ' . ($current_page - 1) * $per_page;
-        $this->items = $wpdb->get_results( $sql, ARRAY_A );
+							( SELECT count(*) FROM '.$this->open_log_table_name.
+                                ' EOC WHERE EOC.trkemail_email_id = E.email_id) AS view_count,
+							( SELECT GROUP_CONCAT( trkemail_date_time ) FROM '.$this->open_log_table_name .
+                                ' EOD WHERE EOD.trkemail_email_id = E.email_id ORDER BY EOD.trkemail_date_time DESC) AS view_date_time,
+							( SELECT count(*) FROM ' . Util::emtr_get_table_name( 'track_email_link_click_log' ) .
+                                ' ECL WHERE ECL.trklinkclick_email_id = E.email_id) AS click_count,	
+							( SELECT GROUP_CONCAT( trklinkclick_date_time ) FROM ' . Util::emtr_get_table_name( 'track_email_link_click_log' ) . 					  							' ECLT WHERE ECLT.trklinkclick_email_id = E.email_id ORDER BY ECLT.trklinkclick_date_time DESC) AS click_date_time
+						 FROM '.$this->table_name.' E WHERE 1 '.$wh.'ORDER BY '.$orderby.' '.$order.' LIMIT '.$per_page.' OFFSET '.(($current_page-1)*$per_page);
+        
+        $this->items = $wpdb->get_results( $sql, ARRAY_A);
+        
         /**
          * REQUIRED. We also have to register our pagination options & calculations.
          */
         $this->set_pagination_args( array(
-            'total_items' => $total_items,
-            'per_page'    => $per_page,
-            'total_pages' => ceil( $total_items / $per_page ),
+            'total_items' => $total_items,                  //WE have to calculate the total number of items
+            'per_page'    => $per_page,                     //WE have to determine how many items to show on a page
+            'total_pages' => ceil( $total_items / $per_page )   //WE have to calculate the total number of pages
         ) );
     }
-
 }

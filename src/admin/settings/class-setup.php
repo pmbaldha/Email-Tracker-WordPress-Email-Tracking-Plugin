@@ -72,7 +72,7 @@ final class Setup extends \PrashantWP\Email_Tracker\Base {
 
         $allowed_roles_to_access_all_emails = array_keys( $this->get_roles_to_access_all_emails() );
 
-        if ( isset( $data['roles_to_access_all_emails'] ) ) {
+        if ( isset( $data['roles_to_access_all_emails'] ) && ! empty( $data['roles_to_access_all_emails'] ) ) {
             $is_invalid_role = false;
             foreach ( $data['roles_to_access_all_emails'] as $role ) {
                 if ( in_array( $role, $allowed_roles_to_access_all_emails ) ) {
@@ -84,9 +84,16 @@ final class Setup extends \PrashantWP\Email_Tracker\Base {
             if ( true === $is_invalid_role ) {
                 add_settings_error( $this->get_menu_slug(), 'invalid-role', __('Invalid role passed to save!', 'email-tracker'), 'error' );
             }
-        } else {
-            $clean_data = array();
         }
+
+        if ( isset( $data['delete_emails_after_days'] ) && ! empty( $data['delete_emails_after_days'] ) ) {
+	        if ( ! is_numeric( $data['delete_emails_after_days'] ) ) {
+		        add_settings_error( $this->get_menu_slug(), 'invalid-delete_emails_after_days', __('Invalid days to delete after days value!', 'email-tracker'), 'error' );
+	        } else {
+                $clean_data['delete_emails_after_days'] = intval( $data['delete_emails_after_days'] );
+            }
+        }
+
 
         return $clean_data;
     }
@@ -97,6 +104,7 @@ final class Setup extends \PrashantWP\Email_Tracker\Base {
 
     public function add_settings_fields() {
         add_settings_field( 'email-tracker-roles', __( 'Roles manage all Emails', 'email-tracker'), array( $this, 'render_role_field' ), $this->get_menu_slug(), 'email-tracker-basic-settings' );
+	    add_settings_field( 'email-tracker-delete-emails-after-days', __( 'Delete Emails after Days ', 'email-tracker'), array( $this, 'render_delete_emails_after_days' ), $this->get_menu_slug(), 'email-tracker-basic-settings' );
     }
 
     private function get_roles_to_access_all_emails() {
@@ -139,5 +147,20 @@ final class Setup extends \PrashantWP\Email_Tracker\Base {
             <?php _e( 'The administrator role has the right to access all emails by default.', 'email-tracker' ); ?></p>
         </p>
     <?php
+    }
+
+	public function render_delete_emails_after_days() {
+		$options_obj = $this->factory->get( '\PrashantWP\Email_Tracker\Options' );
+		$delete_emails_after_days = $options_obj->get( 'delete_emails_after_days', 30 );
+        ?>
+        <input type="number"
+               name="email-tracker-settings[delete_emails_after_days]"
+               value="<?php echo intval( $delete_emails_after_days ); ?>"
+        />
+        <br />
+        <p class="description">
+            <?php _e( 'After deleting emails, The related links will show the 404 not found error. Please be aware of it. Generally, no one email receiver will see the email you send.', 'email-tracker' ); ?></p>
+        </p>
+        <?php
     }
 }

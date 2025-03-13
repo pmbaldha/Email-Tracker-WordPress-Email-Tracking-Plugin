@@ -3,11 +3,11 @@
  * Plugin Name: Email Tracker
  * Plugin URI:  https://wordpress.org/plugins/email-tracker/
  * Description: Email Tracker is a WordPress plugin that lets you know if the emails you have sent have been read or not.
- * Version:     5.2.9
- * Author:      Prashant Baldha - WooCommerce Email Expert
+ * Version: 5.3.12
+ * Update URI: https://api.freemius.com
+ * Author:  Email Expert - Email Tracker - Track Email Open (read) and Click - Mail Tracking
  * Requires at least: 4.0
- * Tested up to: 5.7.2
- * Requires PHP: 5.6.1
+ * Requires PHP: 5.6.0
  * Text Domain: email-tracker
  * Domain Path: /languages
  * Author URI:  https://www.prashantwp.com/
@@ -26,6 +26,8 @@
  *
  * You should have received a copy of the GNU General Public License
  * along with Email Tracker. If not, see <http://www.gnu.org/licenses/>.
+ *
+ * @fs_premium_only /src/admin/settings/
  */
 
 namespace PrashantWP\Email_Tracker;
@@ -35,7 +37,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 }
 
 if ( function_exists( 'emtr' ) ) {
-	emtr()->set_basename( false, __FILE__ );
+	emtr()->set_basename( true, __FILE__ );
 } else {
 	// DO NOT REMOVE THIS IF, IT IS ESSENTIAL FOR THE `function_exists` CALL ABOVE TO PROPERLY WORK.
 	if ( ! function_exists( 'emtr' ) ) {
